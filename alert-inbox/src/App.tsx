@@ -35,15 +35,25 @@ const columns: Column<Cols>[] = [
     },
 ];
 
+const [checkedAlertIds, setCheckedAlertIds] = React.useState<string[]>([]);
+
 const data: Cols[] = alertData.map((x) => ({
     // Map everything using the 'spread' operator
     ...x,
     // Define what we should asign to the 'checkbox' column
     checkbox: (
         <Checkbox
-            value="unchecked"
+            value={checkedAlertIds.includes(String(x.id)) ? "checked" : "unchecked"}
             size="large"
             onChange={() => {
+                const currentIdString = String(x.id);
+                setCheckedAlertIds((previousCheckedAlertIds) => {
+                    if (previousCheckedAlertIds.includes(currentIdString)) {
+                        return previousCheckedAlertIds.filter((id) => id !== currentIdString);
+                    } else {
+                        return [...previousCheckedAlertIds, currentIdString];
+                    }
+                })
                 /* noop */
             }}
         />

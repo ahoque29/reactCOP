@@ -68,6 +68,7 @@ const App: React.FunctionComponent = () => {
         <>
             <Header/>
             <h1 className="p-6">Alert Inbox</h1>
+            <h2>Selected {checkedAlertIds.length} out of a total of {data.length}</h2>
             <Table columns={columns} data={data}/>
         </>
     );

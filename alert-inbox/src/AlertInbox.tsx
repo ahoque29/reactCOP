@@ -41,7 +41,7 @@ const columns: Column<Cols>[] = [
     },
 ];
 
-export const AlertInbox: React.FC<AlertInboxProps> = ({alertData}) => {
+export function AlertInbox(props: AlertInboxProps) {
     const [checkedAlertIds, setCheckedAlertIds] = useState<string[]>([]);
 
     const data: Cols[] = alertData.map((alert) => ({

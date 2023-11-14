@@ -1,10 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "P5YngTr1v4lDo7477dgDncBIaohL0Inncq8g5QN+7dBGYYZjf+9WDLf9w4pgyxgBlr4iSWexpo8PZ5f/x0S2Jw==",
+  "dgSpecHash": "OdtvhfhJb/Xh3mSx6UFTWZeGzDpWU9m6R3YSUN/xvYhs0g7P1NMu0lPd51Vua3s8WM62REaez+N8WmLQsItIOQ==",
   "success": true,
   "projectFilePath": "C:\\SRC\\reactCOP\\TutorialApi\\TutorialApi\\AlertApi\\AlertApi.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Ashib.Hoque\\.nuget\\packages\\microsoft.openapi\\1.6.10\\microsoft.openapi.1.6.10.nupkg.sha512",
+    "C:\\Users\\Ashib.Hoque\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
+    "C:\\Users\\Ashib.Hoque\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",
+    "C:\\Users\\Ashib.Hoque\\.nuget\\packages\\swashbuckle.aspnetcore\\6.5.0\\swashbuckle.aspnetcore.6.5.0.nupkg.sha512",
     "C:\\Users\\Ashib.Hoque\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.5.0\\swashbuckle.aspnetcore.swagger.6.5.0.nupkg.sha512",
     "C:\\Users\\Ashib.Hoque\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.5.0\\swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512",
     "C:\\Users\\Ashib.Hoque\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.5.0\\swashbuckle.aspnetcore.swaggerui.6.5.0.nupkg.sha512"

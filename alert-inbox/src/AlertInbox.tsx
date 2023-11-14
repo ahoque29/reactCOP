@@ -1,8 +1,17 @@
-﻿import {alertData} from "./data/alerts";
-import React, {useState} from "react";
+﻿import React, {useEffect, useState} from "react";
 import {Checkbox, Column, Table} from "@redgate/honeycomb-components";
 
-type Alert = typeof alertData[0];
+interface Alert {
+    id: string;
+    type: string;
+    source: string;
+    status: string;
+    lastUpdated: string;
+}
+
+interface AlertWithCheckedProperty extends Alert {
+    checked: boolean;
+}
 
 type AlertInboxProps = {
     alertData: Alert[]
@@ -42,22 +51,30 @@ const columns: Column<Cols>[] = [
 ];
 
 export function AlertInbox(props: AlertInboxProps) {
-    const [checkedAlertIds, setCheckedAlertIds] = useState<string[]>([]);
+    const [alertData, setAlertData] = useState<AlertWithCheckedProperty[]>([]);
+    const alertDataUrl = 'http://localhost:5232/alertdata';
 
-    const data: Cols[] = alertData.map((alert) => ({
+    const addAlertCheckedProps = (alerts: Alert[]) => {
+        return alerts.map(alert => ({...alert, checked: false}));
+    }
+
+    useEffect(() => {
+        fetch(alertDataUrl)
+            .then(response => response.json())
+            .then(data => setAlertData(addAlertCheckedProps(data)))
+    }, [alertDataUrl])
+
+    const data: Cols[] = alertData.map(alert => ({
         ...alert,
         checkbox: (
             <Checkbox
-                value={checkedAlertIds.includes(alert.id)}
+                value={alert.checked ? "checked" : "unchecked"}
                 size="large"
-                onChange={(checked) => {
-                    setCheckedAlertIds((currentState) => {
-                        if (checked) {
-                            return [...currentState, alert.id];
-                        } else {
-                            return currentState.filter((id) => id !== alert.id);
-                        }
-                    })
+                onChange={() => {
+                    setAlertData(alertData.map(existingAlert => existingAlert.id === alert.id ? {
+                        ...existingAlert,
+                        checked: !existingAlert.checked
+                    } : existingAlert))
                 }}
             />
         )
@@ -65,7 +82,8 @@ export function AlertInbox(props: AlertInboxProps) {
 
     return <>
         <h1 className='p-6'>Alert inbox</h1>
-        <h2 className='p-6'>Selected {checkedAlertIds.length} out of a total of {data.length}</h2>
+        <h2 className='p-6'>Selected {alertData.filter(alert => alert.checked).length} out of a total
+            of {data.length}</h2>
         <Table columns={columns} data={data}/>
     </>
 }

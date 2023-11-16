@@ -1,5 +1,5 @@
 ﻿import React, {useEffect, useState} from "react";
-import {Checkbox, Column, Table} from "@redgate/honeycomb-components";
+import {Checkbox, Column, Table, Spinner} from "@redgate/honeycomb-components";
 
 interface Alert {
     id: string;
@@ -54,7 +54,7 @@ export function AlertInbox(props: AlertInboxProps) {
     const [alertData, setAlertData] = useState<AlertWithCheckedProperty[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
-    
+
     const alertDataUrl = 'http://localhost:5232/alertdata';
 
     const addAlertCheckedProps = (alerts: Alert[]) => {
@@ -62,9 +62,13 @@ export function AlertInbox(props: AlertInboxProps) {
     }
 
     useEffect(() => {
+        setLoading(true);
         fetch(alertDataUrl)
             .then(response => response.json())
-            .then(data => setAlertData(addAlertCheckedProps(data)))
+            .then(data => {
+                setAlertData(addAlertCheckedProps(data));
+                setLoading(false);
+            })
     }, [alertDataUrl])
 
     const data: Cols[] = alertData.map(alert => ({
@@ -85,8 +89,13 @@ export function AlertInbox(props: AlertInboxProps) {
 
     return <>
         <h1 className='p-6'>Alert inbox</h1>
-        <h2 className='p-6'>Selected {alertData.filter(alert => alert.checked).length} out of a total
-            of {data.length}</h2>
-        <Table columns={columns} data={data}/>
+        {loading && <Spinner/>}
+        {!loading && (
+            <>
+                <h2 className='p-6'>Selected {alertData.filter(alert => alert.checked).length} out of a total
+                    of {data.length}</h2>
+                <Table columns={columns} data={data}/>
+            </>
+        )}
     </>
 }

@@ -52,6 +52,9 @@ const columns: Column<Cols>[] = [
 
 export function AlertInbox(props: AlertInboxProps) {
     const [alertData, setAlertData] = useState<AlertWithCheckedProperty[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = useState<string>("");
+    
     const alertDataUrl = 'http://localhost:5232/alertdata';
 
     const addAlertCheckedProps = (alerts: Alert[]) => {

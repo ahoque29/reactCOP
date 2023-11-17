@@ -8,8 +8,16 @@ namespace AlertApi.Controllers;
 public class AlertDataController : ControllerBase
 {
     [HttpGet(Name = "GetAlertData")]
-    public IActionResult Get()
+    public async Task<IActionResult> Get()
     {
+        await Task.Delay(1000);
+
+        var random = new Random();
+        if (random.Next() % 2 == 0)
+        {
+            return BadRequest("Unable to produce alert data");
+        }
+
         return Ok(new List<AlertData>
         {
             new()

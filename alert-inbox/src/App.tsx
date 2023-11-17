@@ -2,6 +2,7 @@ import React from 'react';
 import {Header} from "@redgate/honeycomb-components";
 import {alertData} from "./data/alerts";
 import {AlertInbox} from "./AlertInbox";
+import './App.css';
 
 const App: React.FunctionComponent = () => {
     // This is called a 'Fragment' - you can read more about why we need this here:

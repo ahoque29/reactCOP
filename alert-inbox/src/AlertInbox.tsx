@@ -1,5 +1,5 @@
 ﻿import React, {useEffect, useState} from "react";
-import {Checkbox, Column, Table, Spinner} from "@redgate/honeycomb-components";
+import {Checkbox, Column, Table, Spinner, InlineNotification} from "@redgate/honeycomb-components";
 
 interface Alert {
     id: string;
@@ -64,10 +64,20 @@ export function AlertInbox(props: AlertInboxProps) {
     useEffect(() => {
         setLoading(true);
         fetch(alertDataUrl)
-            .then(response => response.json())
-            .then(data => {
-                setAlertData(addAlertCheckedProps(data));
+            .then(response => {
                 setLoading(false);
+                if (response.ok) {
+                    response.json().then(data => {
+                        setAlertData(addAlertCheckedProps(data));
+                    })
+                } else {
+                    response.text().then(text => {
+                        setErrorMessage(text);
+                    })
+                }
+            })
+            .catch(error => {
+                setErrorMessage(error.message);
             })
     }, [alertDataUrl])
 
@@ -90,7 +100,8 @@ export function AlertInbox(props: AlertInboxProps) {
     return <>
         <h1 className='p-6'>Alert inbox</h1>
         {loading && <Spinner/>}
-        {!loading && (
+        {errorMessage && <InlineNotification message={errorMessage} type="error"/>}
+        {!loading && !errorMessage && (
             <>
                 <h2 className='p-6'>Selected {alertData.filter(alert => alert.checked).length} out of a total
                     of {data.length}</h2>

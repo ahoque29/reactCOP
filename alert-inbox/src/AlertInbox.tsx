@@ -1,5 +1,6 @@
-﻿import React, {useEffect, useState} from "react";
+﻿import React, {useState} from "react";
 import {Checkbox, Column, Table, Spinner, InlineNotification} from "@redgate/honeycomb-components";
+import {useQuery} from "react-query";
 
 interface Alert {
     id: string;
@@ -11,10 +12,6 @@ interface Alert {
 
 interface AlertWithCheckedProperty extends Alert {
     checked: boolean;
-}
-
-type AlertInboxProps = {
-    alertData: Alert[]
 }
 
 type Cols = {
@@ -50,63 +47,54 @@ const columns: Column<Cols>[] = [
     },
 ];
 
-export function AlertInbox(props: AlertInboxProps) {
-    const [alertData, setAlertData] = useState<AlertWithCheckedProperty[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [errorMessage, setErrorMessage] = useState<string>("");
-
+export function AlertInbox() {
+    const [setAlertData, setSetAlertData] = useState<string[]>([]);
     const alertDataUrl = 'http://localhost:5232/alertdata';
 
-    const addAlertCheckedProps = (alerts: Alert[]) => {
-        return alerts.map(alert => ({...alert, checked: false}));
-    }
+    const {
+        data: alertData,
+        isStale,
+        isLoading,
+        isError,
+        error
+    } = useQuery<AlertWithCheckedProperty[], Error>("inbox", () => fetch(alertDataUrl)
+        .then(async response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error(`Fetch failed with status code: ${response.status} ${response.statusText}`);
+            }
+        }), {
+        staleTime: 2500, refetchInterval: 3000, keepPreviousData: true, retry: false, useErrorBoundary: false
+    })
 
-    useEffect(() => {
-        setLoading(true);
-        fetch(alertDataUrl)
-            .then(response => {
-                setLoading(false);
-                if (response.ok) {
-                    response.json().then(data => {
-                        setAlertData(addAlertCheckedProps(data));
-                    })
-                } else {
-                    response.text().then(text => {
-                        setErrorMessage(text);
-                    })
-                }
-            })
-            .catch(error => {
-                setErrorMessage(error.message);
-            })
-    }, [alertDataUrl])
+    const defaultData: AlertWithCheckedProperty[] = [];
 
-    const data: Cols[] = alertData.map(alert => ({
+    const data: Cols[] = (alertData || defaultData).map(alert => ({
+        //Map everything using the 'spread' operator
         ...alert,
+        // Define what we should assign to the 'checkbox' column
         checkbox: (
             <Checkbox
-                value={alert.checked ? "checked" : "unchecked"}
-                size="large"
+                value={setAlertData.includes(alert.id)}
+                size={"large"}
                 onChange={() => {
-                    setAlertData(alertData.map(existingAlert => existingAlert.id === alert.id ? {
-                        ...existingAlert,
-                        checked: !existingAlert.checked
-                    } : existingAlert))
+                    if (setAlertData.includes(alert.id)) {
+                        // Remove the alert from the list of selected alerts
+                        setSetAlertData(alerts => [...alerts.filter(id => id !== alert.id)]);
+                    } else {
+                        // Add the alert to the list of selected alerts
+                        setSetAlertData(alerts => [...alerts, alert.id]);
+                    }
                 }}
             />
         )
     }));
 
     return <>
-        <h1 className='p-6'>Alert inbox</h1>
-        {loading && <Spinner/>}
-        {errorMessage && <InlineNotification message={errorMessage} type="error"/>}
-        {!loading && !errorMessage && (
-            <>
-                <h2 className='p-6'>Selected {alertData.filter(alert => alert.checked).length} out of a total
-                    of {data.length}</h2>
-                <Table columns={columns} data={data}/>
-            </>
-        )}
+        <h1 className={'p-6'}>Alert inbox {isStale && <span>Stale</span>}</h1>
+        <h2 className={'p-6'}>Selected {setAlertData.length} out of a total of {data.length}</h2>
+        {isError && <InlineNotification message={`Error message: ${error.message}`} type="error"/>}
+        {isLoading ? <Spinner/> : <Table columns={columns} data={data}/>}
     </>
 }
